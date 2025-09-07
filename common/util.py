@@ -152,7 +152,7 @@ def most_similar(query, word_to_id, id_to_word, word_matrix, top=5):
             return
 
 
-def convert_one_hot(corpus, vocab_size):
+# def convert_one_hot(corpus, vocab_size):
     '''one-hot表現への変換
 
     :param corpus: 単語IDのリスト（1次元もしくは2次元のNumPy配列）
@@ -174,6 +174,21 @@ def convert_one_hot(corpus, vocab_size):
                 one_hot[idx_0, idx_1, word_id] = 1
 
     return one_hot
+
+def convert_one_hot(corpus:np.ndarray, vocab_size:int):
+
+    # corpusのshapeに単語数を追加
+    result_shape = corpus.shape + (vocab_size,)
+    result = np.zeros(result_shape)
+
+    for i in range(corpus.shape[0]):
+        for j in range(vocab_size):
+            word_vec = corpus[0, i, j]
+            if word_vec == j:
+                corpus[0, i, j] = 1
+    
+    print(result)
+    
 
 
 # def create_co_matrix(corpus, vocab_size, window_size=1):
@@ -259,13 +274,14 @@ def ppmi(C, verbose=False, eps = 1e-8):
     '''
     M = np.zeros_like(C, dtype=np.float32)
     N = np.sum(C) # スカラー(全要素の合計)
-    S = np.sum(C, axis=0) # ベクトル(行方向に合計) 各単語が別の単語と共起した回数
+    row_sum = np.sum(C, axis=1) # ベクトル(列方向に合計) 各単語が別の単語と共起した回数
+    col_sum = np.sum(C, axis=0) # ベクトル(行方向に合計) 各単語が別の単語と共起した回数
     total = C.shape[0] * C.shape[1]
     cnt = 0
 
     for i in range(C.shape[0]):
         for j in range(C.shape[1]):
-            pmi = np.log2(C[i, j] * N / (S[i] * S[j]) + eps)
+            pmi = np.log2(C[i, j] * N / (row_sum[i] * col_sum[j]) + eps)
             M[i, j] = max(0, pmi)
 
             if verbose:
@@ -275,7 +291,7 @@ def ppmi(C, verbose=False, eps = 1e-8):
     return M
 
 
-def create_contexts_target(corpus, window_size=1):
+# def create_contexts_target(corpus, window_size=1):
     '''コンテキストとターゲットの作成
 
     :param corpus: コーパス（単語IDのリスト）
@@ -295,6 +311,21 @@ def create_contexts_target(corpus, window_size=1):
 
     return np.array(contexts), np.array(target)
 
+def create_contexts_target(corpus, window_size=1):
+    target = corpus[window_size: -window_size]
+    contexts = []
+
+    for idx in range(window_size, len(corpus) - window_size):
+        cs = []
+        for t in range(-window_size, window_size + 1):
+            if t == 0:
+                continue
+            cs.append(corpus[idx + t])
+        contexts.append(cs)
+    
+    contexts = np.array(contexts)
+
+    return contexts, target
 
 def to_cpu(x):
     import numpy
