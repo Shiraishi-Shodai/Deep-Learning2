@@ -181,14 +181,23 @@ def convert_one_hot(corpus:np.ndarray, vocab_size:int):
     result_shape = corpus.shape + (vocab_size,)
     result = np.zeros(result_shape)
 
-    for i in range(corpus.shape[0]):
-        for j in range(vocab_size):
-            word_vec = corpus[0, i, j]
-            if word_vec == j:
-                corpus[0, i, j] = 1
-    
-    print(result)
-    
+    # corpusが1次元の時
+    if corpus.ndim == 1:
+        for index, c in enumerate(corpus):
+            for i in range(vocab_size):
+                if c == i:
+                    result[index, i] = 1
+                    break
+
+    elif corpus.ndim == 2:
+
+        for index1, c_row in enumerate(corpus):
+            for index2, c in enumerate(c_row):
+                for i in range(vocab_size):
+                    if c == i:
+                        result[index1, index2, i] = 1
+                        break
+    return result    
 
 
 # def create_co_matrix(corpus, vocab_size, window_size=1):

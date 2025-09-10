@@ -10,7 +10,7 @@ class MatMul:
         self.grads = [np.zeros_like(W)]
         self.x = None
 
-    def forward(self, x):
+    def forward(self, x:np.ndarray):
         W, = self.params
         out = np.dot(x, W)
         self.x = x
@@ -20,7 +20,9 @@ class MatMul:
         W, = self.params
         dx = np.dot(dout, W.T)
         dW = np.dot(self.x.T, dout)
+        # self.gradsの参照先の値は、上書きされず、self.grads自身の値が変わるだけ。
         self.grads[0][...] = dW
+        
         return dx
 
 
