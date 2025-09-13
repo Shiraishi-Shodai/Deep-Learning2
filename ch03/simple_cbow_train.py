@@ -26,3 +26,7 @@ trainer = Trainer(model, optimizer)
 
 trainer.fit(contexts, target, max_epoch, batch_size)
 trainer.plot()
+
+word_vec  = model.word_vecs
+for word_id, word in id_to_word.items():
+    print(word, word_vec[word_id])
