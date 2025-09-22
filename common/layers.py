@@ -2,6 +2,7 @@
 from common.np import *  # import numpy as np
 from common.config import GPU
 from common.functions import softmax, cross_entropy_error
+import numpy as np
 
 
 class MatMul:
@@ -150,23 +151,43 @@ class Dropout:
         return dout * self.mask
 
 
+# class Embedding:
+#     def __init__(self, W):
+#         self.params = [W]
+#         self.grads = [np.zeros_like(W)]
+#         self.idx = None
+
+#     def forward(self, idx):
+#         W, = self.params
+#         self.idx = idx
+#         out = W[idx]
+#         return out
+
+#     def backward(self, dout):
+#         dW, = self.grads
+#         dW[...] = 0
+#         if GPU:
+#             np.scatter_add(dW, self.idx, dout)
+#         else:
+#             np.add.at(dW, self.idx, dout)
+#         return None
+
 class Embedding:
-    def __init__(self, W):
+    def __init__(self, W) -> None:
         self.params = [W]
         self.grads = [np.zeros_like(W)]
         self.idx = None
-
+    
     def forward(self, idx):
-        W, = self.params
+        W = self.params
         self.idx = idx
         out = W[idx]
-        return out
 
+        return out
+    
     def backward(self, dout):
-        dW, = self.grads
-        dW[...] = 0
-        if GPU:
-            np.scatter_add(dW, self.idx, dout)
-        else:
-            np.add.at(dW, self.idx, dout)
+        dw = self.grads
+        dw[...] = 0
+        np.add.at(dw, self.idx, dout)
+
         return None

@@ -13,7 +13,8 @@ class SimpleSkipGram:
         # コードでは、出力層は一つしか用意しない
         self.out_layer = MatMul(W_out)
 
-        # 出力層が複数あることをひょうげするために損失のみ複数用意する
+        # 出力層が複数あることを表現するために損失のみ複数用意する
+        # 正解ラベルのcontextのみが異なる
         self.loss_layer0 = SoftmaxWithLoss()
         self.loss_layer1 = SoftmaxWithLoss()
 
