@@ -86,7 +86,7 @@ class UnigramSmapler:
                 p[target_idx] = 0 # ターゲットを負の例としてサンプリングしないようにターゲットの確率を0にする
                 p /= p.sum()
 
-                negative_sample[i, :] = np.random.choice(self.vocab_size, size=self.vocab_size, replace=False, p=p)
+                negative_sample[i, :] = np.random.choice(self.vocab_size, size=self.sample_size, replace=False, p=p)
         else:
             # GPU(cupy）で計算するときは、速度を優先
             # 負例にターゲットが含まれるケースがある

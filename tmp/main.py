@@ -57,5 +57,13 @@ idx = np.array([0, 1])
 
 
 # ランダムチョイス
-a = np.random.choice(3, size=3, replace=False, p=[0.2, 0.5, 0.3])
-print(a)
+# a = np.random.choice(3, size=3, replace=False, p=[0.2, 0.5, 0.3])
+# print(a)
+
+a = np.array([np.random.random() for i in range(100)])
+b = np.sum(a)
+
+c = a / b
+d = np.sum(c)
+print(c)
+print(np.sum(c))
