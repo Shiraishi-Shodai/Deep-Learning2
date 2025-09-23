@@ -300,7 +300,7 @@ def ppmi(C, verbose=False, eps = 1e-8):
     return M
 
 
-# def create_contexts_target(corpus, window_size=1):
+def create_contexts_target(corpus, window_size=1):
     '''コンテキストとターゲットの作成
 
     :param corpus: コーパス（単語IDのリスト）
@@ -320,21 +320,22 @@ def ppmi(C, verbose=False, eps = 1e-8):
 
     return np.array(contexts), np.array(target)
 
-def create_contexts_target(corpus, window_size=1):
-    target = corpus[window_size: -window_size]
-    contexts = []
+# def create_contexts_target(corpus, window_size=1):
+#     target = corpus[window_size: -window_size]
+#     contexts = []
 
-    for idx in range(window_size, len(corpus) - window_size):
-        cs = []
-        for t in range(-window_size, window_size + 1):
-            if t == 0:
-                continue
-            cs.append(corpus[idx + t])
-        contexts.append(cs)
+#     for idx in range(window_size, len(corpus) - window_size):
+#         cs = []
+#         for t in range(-window_size, window_size + 1):
+#             if t == 0:
+#                 continue
+#             cs.append(corpus[idx + t])
+#         contexts.append(cs)
     
-    contexts = np.array(contexts)
+#     contexts = np.array(contexts)
+#     target = np.array(target)
 
-    return contexts, target
+#     return contexts, target
 
 def to_cpu(x):
     import numpy

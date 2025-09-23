@@ -102,7 +102,7 @@ class NegativeSamplingLoss:
         self.sample_size = sample_size
         self.sampler = UnigramSmapler(corpus, power, self.sample_size)
         self.loss_layers = [SigmoidWithLoss() for _ in range(sample_size + 1)]
-        self.embed_dot_layers = [EmbeddingDot(W) for _ in range(sample_size * 1)]
+        self.embed_dot_layers = [EmbeddingDot(W) for _ in range(sample_size + 1)]
         
         self.params, self.grads = [], []
         for layer in self.embed_dot_layers:
@@ -121,8 +121,9 @@ class NegativeSamplingLoss:
 
         # 負例のフォワード
         negative_label = np.zeros(batch_size, dtype=np.int32)
+        # embedとlossレイヤーをiで指定するために、iを1から開始する。
         for i in range(1, self.sample_size + 1):
-            negative_target = negative_sample[:, i]
+            negative_target = negative_sample[:, i - 1] # ネガティブサンプルのshapeは(batch_size. sample_size)。そのままiを使うと添字エラーになってしまう。
             negative_score = self.embed_dot_layers[i].forward(h, negative_target)
             loss += self.loss_layers[i].forward(negative_score, negative_label)
         

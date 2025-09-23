@@ -60,10 +60,19 @@ idx = np.array([0, 1])
 # a = np.random.choice(3, size=3, replace=False, p=[0.2, 0.5, 0.3])
 # print(a)
 
-a = np.array([np.random.random() for i in range(100)])
-b = np.sum(a)
 
-c = a / b
-d = np.sum(c)
-print(c)
-print(np.sum(c))
+a = np.arange(10).reshape(2, -1).tolist()
+z = np.arange(10, 20).reshape(2, -1).tolist()
+w = np.arange(20, 30).reshape(2, -1).tolist()
+b = [a, z, w]
+
+# print(a)
+# print(b)
+
+c, v, x = b
+d = b
+
+print(c, type(c))
+print(v, type(v))
+print(x, type(x))
+print(d, type(d))

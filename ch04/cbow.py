@@ -1,7 +1,7 @@
 import sys
 sys.path.append("..")
 from common.layers import Embedding
-from negative_sample_layer import NegativeSamplingLoss
+from negative_sampling_layer import NegativeSamplingLoss
 import numpy as np
 
 class CBOW:
@@ -31,14 +31,14 @@ class CBOW:
         # 分散表現を設定
         self.word_vecs = W_in
 
-    def forward(self, context, target):
+    def forward(self, contexts, target):
         # contextは二次元
         # targetは一次元
         h = 0
 
         for i, layer in enumerate(self.in_layers):
             # 各入力層で、入力値のコンテキストとして与えられた単語の重みを抜き出し、加算する
-            h += layer.forward(context[:, i])
+            h += layer.forward(contexts[:, i])
         
         # 入力値と入力層の重みを掛けた値を平均化
         h *= 1 / len(self.in_layers)
@@ -48,7 +48,7 @@ class CBOW:
         return loss
 
     def backward(self, dout=1):
-        dout = self.ns_loss().backward()
+        dout = self.ns_loss.backward()
         dout *= 1 / len(self.in_layers)
 
         for layer in self.in_layers:
