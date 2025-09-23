@@ -28,7 +28,7 @@ trainer = Trainer(model, optimizer)
 
 # 学習開始
 trainer.fit(contexts, target, max_epoch, batch_size)
-trainer.plot()
+trainer.plot("cbow_train.png")
 
 # # 後ほど利用できるように、必要なデータを保存
 word_vecs = model.word_vecs
@@ -37,7 +37,7 @@ params = {}
 params["word_vecs"] = word_vecs
 params["word_to_id"] = word_to_id
 params["id_to_word"] = id_to_word
-pkl_file = "cbow_param.pkl"
+pkl_file = "cbow_params.pkl"
 
 with open(pkl_file, "wb") as f:
     pickle.dump(params, f, -1)
