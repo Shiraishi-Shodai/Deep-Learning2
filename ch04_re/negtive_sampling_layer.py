@@ -6,10 +6,14 @@ import numpy as np
 class EmbeddingDot:
     def __init__(self, W) -> None:
         self.embed = Embedding(W)
+
+        # 追加
+        self.params = self.embed.params
+        self.grads = self.embed.grads
+        self.cache = None
     
     def forward(self, h, index):
         target_W = self.embed.forward(index)
-        print(f"ターゲットW: {target_W}", end="\n\n")
         out = np.sum(h * target_W, axis=1)
 
         self.cache = (h, target_W)
