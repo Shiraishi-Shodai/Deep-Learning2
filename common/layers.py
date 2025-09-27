@@ -151,7 +151,7 @@ class Dropout:
         return dout * self.mask
 
 
-class Embedding:
+# class Embedding:
     def __init__(self, W):
         self.params = [W]
         self.grads = [np.zeros_like(W)]
@@ -171,3 +171,23 @@ class Embedding:
         else:
             np.add.at(dW, self.idx, dout)
         return None
+
+class Embedding:
+    def __init__(self, W) -> None:
+        self.params = [W]
+        self.grads = [np.zeros_like(W)]
+    
+    def forward(self, index):
+        self.index = index
+        W, = self.params
+        target_W = W[self.index]
+
+        return target_W
+    
+    def backward(self, dout):
+        dW, = self.grads
+        dW[...] = 0
+        np.add.at(dW, self.index, dout)
+
+        return None
+        
