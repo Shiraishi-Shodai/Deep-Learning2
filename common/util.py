@@ -443,6 +443,10 @@ def analogy(a, b, c, word_to_id, id_to_word, word_matrix, top=5, answer=None):
     query_vec = b_vec - a_vec + c_vec
     query_vec = normalize(query_vec)
 
+    # word_matrix の各行ベクトルは事前に normalize() で単位ベクトル化していることを前提とする。
+    # そのため query_vec を正規化してから行列積を取ることで、各単語ベクトルとのコサイン類似度に
+    # 等しい値を一括で取得できる。逐次 cos_similarity() を呼び出すよりもループ処理と平方根計算を
+    # 省けるため、探索処理を効率化できる。
     similarity = np.dot(word_matrix, query_vec)
 
     if answer is not None:
