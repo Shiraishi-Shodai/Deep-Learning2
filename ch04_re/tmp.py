@@ -74,13 +74,21 @@ EmbeddingDotの順伝搬の確認
 # a = np.array([[4, 3], [5, 6]])
 # print(np.linalg.norm(a, ord=2, axis=1, keepdims=True))
 
-idxs = np.array([0, 3, 2, 4, 50, 8])
-banned_ids = np.array([3, 2])
-k = 5
+# idxs = np.array([0, 3, 2, 4, 50, 8])
+# banned_ids = np.array([3, 2])
+# k = 5
 
-# 除外処理
-keep = [i for i in range(len(idxs)) if idxs[i] not in banned_ids]
-idxs = [idxs[i] for i in keep]
+# # 除外処理
+# keep = [i for i in range(len(idxs)) if idxs[i] not in banned_ids]
+# idxs = [idxs[i] for i in keep]
 
-print(keep)
-print(idxs)
+# print(keep)
+# print(idxs)
+
+a = np.array([[0.14, 0.27],[0.56, 0.03]]).astype("f")
+b = a * 0.6
+c = a * 0.4
+
+print(b)
+print(c)
+print(b.sum(), c.sum())
