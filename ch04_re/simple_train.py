@@ -9,11 +9,13 @@ from common.optimizer import Adam
 import pickle
 
 def main():
-    text = "You say goodbye and I say hell."
+    text = "You say goodby and I say hell."
     window_size = 1
 
     corpus, word_to_id, id_to_word = preprocess(text)
     contexts, targets = create_contexts_target(corpus, window_size) 
+
+    print(type(contexts), type(targets))
 
     vocab_size = len(word_to_id)
     H = 3 # 各単語の分散ベクトルの次元数
@@ -21,10 +23,10 @@ def main():
     power = 0.75
 
     batch_size = 3
-    max_epoch = 100
+    max_epoch = 1000
 
     filename = "simple_sample.png" # 実行結果
-    pkl_filename = "simple_params.pkl"
+    model_name = "simple_sample_model.pkl"
 
     optimizer = Adam()
     model = CBOW(corpus, vocab_size, H, window_size, sample_size, power)
@@ -34,15 +36,10 @@ def main():
 
     trainer.plot(filename)
 
-    # 分散表現とその他付属情報をを保存
-    params = {
-        "word_to_id": word_to_id,
-        "id_to_word": id_to_word,
-        "word_vec": trainer.model.word_vec.astype(np.float16)
-    }
+    # モデルを保存
+    with open(model_name, "wb") as f:
+        pickle.dump(model, f)
 
-    with open(pkl_filename, "wb") as f:
-        pickle.dump(params, f, -1)
 
 if __name__ == "__main__":
     main()

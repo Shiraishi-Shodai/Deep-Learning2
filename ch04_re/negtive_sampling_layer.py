@@ -55,7 +55,7 @@ class UnigramSmapler:
         batch_size = target.shape[0]
 
         # 返却値を0で初期化
-        negative_sample = np.zeros((batch_size, self.sample_size))
+        negative_sample = np.zeros((batch_size, self.sample_size), dtype=np.int32)
 
         for b in range(batch_size):
             # targetをネガティブサンプリングで取得しないようにする。
@@ -119,4 +119,4 @@ class NegativeSamplingLoss:
             dscore = self.loss_layers[i].backward(dout)
             dh += self.embed_dots[i].backward(dscore)
         
-        return None
+        return dh
