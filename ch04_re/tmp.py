@@ -60,14 +60,27 @@ EmbeddingDotの順伝搬の確認
 # print()
 # print(embedDot.embed.grads)
 
-a = np.array([1, 0, 1, 0, 2, 9, 4, 10, 4, 4, 7, 38, 2, 0, 1], dtype=np.float32)
+# a = np.array([1, 0, 1, 0, 2, 9, 4, 10, 4, 4, 7, 38, 2, 0, 1], dtype=np.float32)
 
-counter = Counter(a)
-vocab_size = len(counter)
-p = list(counter.values())
+# counter = Counter(a)
+# vocab_size = len(counter)
+# p = list(counter.values())
 
-p /= np.sum(p)
+# p /= np.sum(p)
 
-print(a.shape, p.shape)
-print(np.random.choice(vocab_size, size=5, replace=False, p=p))
+# print(a.shape, p.shape)
+# print(np.random.choice(vocab_size, size=5, replace=False, p=p))
 
+# a = np.array([[4, 3], [5, 6]])
+# print(np.linalg.norm(a, ord=2, axis=1, keepdims=True))
+
+idxs = np.array([0, 3, 2, 4, 50, 8])
+banned_ids = np.array([3, 2])
+k = 5
+
+# 除外処理
+keep = [i for i in range(len(idxs)) if idxs[i] not in banned_ids]
+idxs = [idxs[i] for i in keep]
+
+print(keep)
+print(idxs)
