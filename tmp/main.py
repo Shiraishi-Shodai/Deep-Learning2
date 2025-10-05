@@ -61,18 +61,22 @@ idx = np.array([0, 1])
 # print(a)
 
 
-a = np.arange(10).reshape(2, -1).tolist()
-z = np.arange(10, 20).reshape(2, -1).tolist()
-w = np.arange(20, 30).reshape(2, -1).tolist()
-b = [a, z, w]
+# a = np.arange(10).reshape(2, -1).tolist()
+# z = np.arange(10, 20).reshape(2, -1).tolist()
+# w = np.arange(20, 30).reshape(2, -1).tolist()
+# b = [a, z, w]
 
-# print(a)
-# print(b)
+# # print(a)
+# # print(b)
 
-c, v, x = b
-d = b
+# c, v, x = b
+# d = b
 
-print(c, type(c))
-print(v, type(v))
-print(x, type(x))
-print(d, type(d))
+# print(c, type(c))
+# print(v, type(v))
+# print(x, type(x))
+# print(d, type(d))
+
+
+grads = [np.zeros_like((2, 1)), np.zeros_like((2, 1)), np.zeros_like((2, 1))]
+print(*grads)
