@@ -78,5 +78,47 @@ idx = np.array([0, 1])
 # print(d, type(d))
 
 
-grads = [np.zeros_like((2, 1)), np.zeros_like((2, 1)), np.zeros_like((2, 1))]
-print(*grads)
+# grads = [np.zeros_like((2, 1)), np.zeros_like((2, 1)), np.zeros_like((2, 1))]
+# print(*grads)
+
+
+# a = np.arange(12).reshape(3, -1)
+# print(a)
+# print(np.sum(a, axis=0))
+# print(np.sum(a, axis=1))
+
+# def test(a, b, c):
+#     print(a)
+#     print(b)
+#     print(c)
+
+# test_arr = [1, 2, 3]
+# test(*test_arr)
+
+# b = np.ones((2, 3, 2))
+# print(b)
+# print()
+
+# print(b[:, 0, :].shape)
+
+# print(np.empty((1, 2), dtype="int"))
+
+a = [1, 2, 3]
+b = [i + 1 for i in a]
+c = [i + 2 for i in a]
+
+print(a)
+print(b)
+print(c)
+
+grads = [0, 0, 0]
+
+for i in np.array([a, b, c]):
+    print(i)
+    grads[0] += i
+
+print(grads)
+
+
+e = [1, 2, 3] + [1, 2, 3]
+print(e)
