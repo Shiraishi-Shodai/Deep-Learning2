@@ -103,22 +103,26 @@ idx = np.array([0, 1])
 
 # print(np.empty((1, 2), dtype="int"))
 
-a = [1, 2, 3]
-b = [i + 1 for i in a]
-c = [i + 2 for i in a]
+# a = [1, 2, 3]
+# b = [i + 1 for i in a]
+# c = [i + 2 for i in a]
 
-print(a)
-print(b)
-print(c)
+# print(a)
+# print(b)
+# print(c)
 
-grads = [0, 0, 0]
+# grads = [0, 0, 0]
 
-for i in np.array([a, b, c]):
-    print(i)
-    grads[0] += i
+# for i in np.array([a, b, c]):
+#     print(i)
+#     grads[0] += i
 
-print(grads)
+# print(grads)
 
 
-e = [1, 2, 3] + [1, 2, 3]
-print(e)
+# e = [1, 2, 3] + [1, 2, 3]
+# print(e)
+
+print(np.random.randn(1))
+
+print(1 % 99)
