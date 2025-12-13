@@ -1,3 +1,16 @@
 {
-  "python.languageServer": "None"
+  "python.languageServer": "None",
+  "editor.acceptSuggestionOnEnter": "on",
+  "editor.acceptSuggestionOnCommitCharacter": true,
+  "emmet.showAbbreviationSuggestions": false,
+  "editor.inlineSuggest.triggerCommandOnProviderChange": false,
+  "editor.suggest.showFunctions": false,
+  "editor.suggest.showIcons": false,
+  "editor.inlineSuggest.edits.allowCodeShifting": "always",
+  "files.autoSave": "afterDelay",
+  "editor.inlineSuggest.edits.renderSideBySide": "never",
+  "editor.inlineSuggest.syntaxHighlightingEnabled": false,
+  "editor.screenReaderAnnounceInlineSuggestion": false,
+  "editor.suggest.snippetsPreventQuickSuggestions": true,
+  "emmet.showSuggestionsAsSnippets": true
 }

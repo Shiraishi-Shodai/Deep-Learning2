@@ -3,14 +3,13 @@ import numpy as np
 from common.layers import Embedding
 from common.functions import softmax
 
-
 class RNN:
-    def __init__(self, Wx, Wh, b) -> None:
+    def __init__(self, Wx, Wh, b):
         self.params = [Wx, Wh, b]
         self.grads = [np.zeros_like(Wx), np.zeros_like(Wh), np.zeros_like(b)]
+        
         self.cache = None
 
-    
     def forward(self, x, h_prev):
         Wx, Wh, b = self.params
         t = np.dot(h_prev, Wh) + np.dot(x, Wx) + b
@@ -18,7 +17,7 @@ class RNN:
 
         self.cache = (x, h_prev, h_next)
         return h_next
-
+    
     def backward(self, dh_next):
         Wx, Wh, b = self.params
         x, h_prev, h_next = self.cache
@@ -28,7 +27,7 @@ class RNN:
         dWh = np.dot(h_prev.T, dt)
         dh_prev = np.dot(dt, Wh.T)
         dWx = np.dot(x.T, dt)
-        dx = np.dot(dt, Wh.T)
+        dx = np.dot(dt, Wx.T)
 
         self.grads[0][...] = dWx
         self.grads[1][...] = dWh
@@ -36,17 +35,13 @@ class RNN:
 
         return dx, dh_prev
 
-
 class TimeRNN:
-    def __init__(self, Wx, Wh, b, stateful=False) -> None:
+    def __init__(self, Wx, Wh, b, stateful=False):
         self.params = [Wx, Wh, b]
         self.grads = [np.zeros_like(Wx), np.zeros_like(Wh), np.zeros_like(b)]
 
         self.layers = None
-
-        self.h = None
-        self.dh = None
-
+        self.h, self.dh = None, None
         self.stateful = stateful
     
     def set_state(self, h):
@@ -54,7 +49,6 @@ class TimeRNN:
     
     def reset_state(self):
         self.h = None
-
     
     def forward(self, xs):
         Wx, Wh, b = self.params
@@ -62,54 +56,50 @@ class TimeRNN:
         D, H = Wx.shape
 
         self.layers = []
-
         hs = np.empty((N, T, H), dtype="f")
 
-        # statefulがTrueの時、まえ時刻のhを使用する
         if not self.stateful or self.h is None:
             self.h = np.zeros((N, H), dtype="f")
         
         for t in range(T):
             layer = RNN(*self.params)
+            # h時点の順伝搬(バッチサイズごとにRNNレイヤが順伝搬を行う)
             self.h = layer.forward(xs[:, t, :], self.h)
-            # RNNの書くて状態をhsの各時刻に代入
             hs[:, t, :] = self.h
             self.layers.append(layer)
         
         return hs
-    
+
     def backward(self, dhs):
         Wx, Wh, b = self.params
-        N, T, H = dhs.shape
+        N, T, H = dhs.shape # 逆伝搬したデータの形
         D, H = Wx.shape
 
-        # 入力に対する勾配を初期化
         dxs = np.empty((N, T, D), dtype="f")
         dh = 0
-        grads = [0, 0, 0]
-
+        grads = [0, 0, 0] # TimeRNNの勾配(1時データ用)
+        
+        # 1データずつ逆伝搬し、dxsを更新
         for t in reversed(range(T)):
             layer = self.layers[t]
-            # 順伝搬時に分岐した出力から勾配を受取り、合計
+            # h時点の逆伝搬(バッチサイズごとに)
             dx, dh = layer.backward(dhs[:, t, :] + dh)
             dxs[:, t, :] = dx
 
-            # gradを足す(gradはnumpy配列であるため、リストのように要素数が増えるのではなく、各要素の足し算が行われる)
+            # 1データ分(h時点)のWx, Wh, bを最終的な勾配に加算
             for i, grad in enumerate(layer.grads):
                 grads[i] += grad
         
-        # TimeRNNのdWx, dWh, dbを格納
+        # TimeRNNの勾配を
         for i, grad in enumerate(grads):
-            self.grads[i][...] = grad
-        
+            self.grads[i][...] = grad # 中身のデータだけ変更する
         self.dh = dh
 
         return dxs
 
 
-
 class TimeEmbedding:
-    def __init__(self, W) -> None:
+    def __init__(self, W):
         self.params = [W]
         self.grads = [np.zeros_like(W)]
         self.layers = None
@@ -119,25 +109,26 @@ class TimeEmbedding:
         N, T = xs.shape
         V, D = self.W.shape
 
-        out = np.empty((N, T, D), dtype="f")
+        out = np.empty((N, T, D), dtype='f')
         self.layers = []
 
         for t in range(T):
             layer = Embedding(self.W)
+            # h時点(batchサイズごとに単語の埋め込みベクトルを計算)
             out[:, t, :] = layer.forward(xs[:, t])
             self.layers.append(layer)
-        
+
         return out
-    
+
     def backward(self, dout):
         N, T, D = dout.shape
-        grad = 0
 
-        for t in reversed(range(T)):
+        grad = 0
+        for t in range(T):
             layer = self.layers[t]
             layer.backward(dout[:, t, :])
             grad += layer.grads[0]
-        
+
         self.grads[0][...] = grad
         return None
 
@@ -174,6 +165,7 @@ class TimeAffine:
         self.grads[1][...] = db
 
         return dx
+
 
 class TimeSoftmaxWithLoss:
     def __init__(self):
