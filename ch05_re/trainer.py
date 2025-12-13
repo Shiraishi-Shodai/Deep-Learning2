@@ -49,7 +49,6 @@ class RNNTrainer:
         for epoch in range(max_epoch):
             for iters in range(max_iters):
                 batch_x, batch_t = self.get_batch(xs, ts, batch_size, time_size)
-                
 
                 # 勾配を求め、パラメータ更新
                 loss = model.forward(batch_x, batch_t)
@@ -72,6 +71,10 @@ class RNNTrainer:
                     total_loss, loss_count = 0, 0
 
             self.current_epoch += 1
+    
+    def predict(self, X_test, T_test, batch_size=20, time_size=35):
+        batch_x, batch_t = self.get_batch(X_test, T_test, batch_size, time_size)
+        return self.model.predict(batch_x, batch_t)
 
     def plot(self, filename, ylim=None):
         x = numpy.arange(len(self.ppl_list))

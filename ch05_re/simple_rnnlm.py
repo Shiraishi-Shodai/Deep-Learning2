@@ -57,6 +57,12 @@ class SimpleRnnlm:
             dout = layer.backward(dout)
         return dout
     
+    def predict(self, xs, ts):
+        for layer in self.layers:
+            xs = layer.forward(xs)
+        loss = self.loss_layer.forward(xs, ts)
+        return xs, loss
+    
     def reset_state(self):
         """隠れ状態hをNoneにする
         """
