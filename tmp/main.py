@@ -139,4 +139,4 @@ import collections
 # b = [[3, 4], [10, 11]]
 # print(a + b)
 
-print(999 // 10)
+print(None * np.arange(10))
