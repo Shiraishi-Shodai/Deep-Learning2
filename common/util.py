@@ -370,11 +370,14 @@ def eval_perplexity(model, corpus, batch_size=10, time_size=35):
     max_iters = (corpus_size - 1) // (batch_size * time_size)
     jump = (corpus_size - 1) // batch_size
 
+    # 勾配の調整回数分
     for iters in range(max_iters):
         xs = np.zeros((batch_size, time_size), dtype=np.int32)
         ts = np.zeros((batch_size, time_size), dtype=np.int32)
+        # iterごとにバッチデータを作成するために開始位置をずらす(バッチデータを複数つくるため)
         time_offset = iters * time_size
         offsets = [time_offset + (i * jump) for i in range(batch_size)]
+        # バッチデータの作成
         for t in range(time_size):
             for i, offset in enumerate(offsets):
                 xs[i, t] = corpus[(offset + t) % corpus_size]

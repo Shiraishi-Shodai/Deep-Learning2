@@ -1,7 +1,7 @@
 import numpy as np
 
 from common.layers import Embedding
-from common.functions import softmax
+from common.functions import softmax, sigmoid
 
 
 class LSTM:
@@ -12,15 +12,16 @@ class LSTM:
         self.cache = None
     
     def forward(self, x, h_prev, c_prev):
+        Wx, Wh, b = self.params
         N, H = h_prev.shape
-        # 各ゲートの出力を求める
+        # 各ゲートの出力を求める A = (N, H)
         A = np.dot(x, Wx) + np.dot(h_prev, Wh) + b
 
         # 各ゲートの出力を取り出す
-        f = A[:, H]
-        g = [:, H * 2]
-        i = [:, H * 2 : H * 3]
-        o = [:, H * 2 : H * 3]
+        f = A[:, :H]
+        g = A[:, H : H * 2]
+        i = A[:, H * 2 : H * 3]
+        o = A[:, H * 3 :]
 
         # 各ゲートの活性化関数通過後の値を求める
         f = sigmoid(f)
@@ -65,8 +66,8 @@ class LSTM:
         # forward時に分配した重みやバイアスを結合し一気に勾配を計算
         dA = np.hstack((df, dg, di, do))
 
-        dWx = (x.T, dA)
-        dWh = (h_prev.T, dA)
+        dWx = np.dot(x.T, dA)
+        dWh = np.dot(h_prev.T, dA)
         db = dA.sum(axis=0)
 
         self.grads[0][...] = dWx
@@ -77,6 +78,70 @@ class LSTM:
         dh_prev = np.dot(dA, Wh.T)
 
         return dx, dh_prev, dc_prev
+
+class TimeLSTM:
+    def __init__(self, Wx, Wh, b, stateful=False):
+        self.params = [Wx, Wh, b]
+        self.grads = [np.zeros_like(Wx), np.zeros_like(Wh), np.zeros_like(b)]
+        self.layers = None
+
+        self.h, self.c = None, None
+        self.dh = None
+        self.stateful = stateful
+    
+    def forward(self, xs):
+        Wx, Wh, b = self.params
+        N, T, D = xs.shape
+        H = Wh.shape[0]
+
+        self.layers = []
+        hs = np.empty((N, T, H), dtype='f')
+
+        if not self.stateful or self.h  is None:
+            self.h = np.zeros((N, H), dtype="f")
+        
+        if not self.stateful or self.c is None:
+            self.c = np.zeros((N, H), dtype="f")
+        
+        for t in range(T):
+            layer = LSTM(*self.params)
+            self.h, self.c = layer.forward(xs[:, t, :], self.h, self.c)
+            hs[:, t, :] = self.h
+
+            self.layers.append(layer)
+        
+        return hs
+    
+    def backward(self, dhs):
+        Wx, Wh, b = self.params
+        N, T, H = dhs.shape
+        D = Wx.shape[0]
+
+        dxs = np.empty((N, T, D), dtype="f")
+        dh, dc = 0, 0
+
+        grads = [0, 0, 0]
+        for t in reversed(range(T)):
+            layer = self.layers[t]
+            # repeatがあるためdhを合計
+            dx, dh, dc = layer.backward(dhs[:, t, :] + dh, dc)
+            dxs[:, t, :] = dx
+
+            for i, grad in enumerate(layer.grads):
+                grads[i] += grad
+        
+        for i, grad in enumerate(grads):
+            self.grads[i][...] = grad
+        
+        self.dh = dh
+        
+        return dxs
+    
+    def set_state(self, h, c=None):
+        self.h, self.c = h, c
+    
+    def reset_state(self):
+        self.h, self.c = None, None
 
 
 class RNN:

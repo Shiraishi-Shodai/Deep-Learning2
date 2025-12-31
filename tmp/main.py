@@ -1,6 +1,7 @@
 import numpy as np
 import copy
 import collections
+import sys
 
 # h = np.array([[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]]) # (2, 3)
 # w = np.arange(12).reshape(3, -1) # (3, 4)
@@ -139,4 +140,39 @@ import collections
 # b = [[3, 4], [10, 11]]
 # print(a + b)
 
-print(None * np.arange(10))
+# print(None * np.arange(10))
+
+# x = np.linspace(1, 1000, 1000)
+# t = np.linspace(1000, 2000, 1000)
+# data_size = x.shape[0]
+# time_size = 35
+# time_idx = 0
+# batch_size = 20
+# jump = data_size // batch_size
+
+# offsets = [i * jump for i in range(batch_size)]
+
+# batch_x = np.empty((batch_size, time_size), dtype='i')
+# batch_t = np.empty((batch_size, time_size), dtype='i')
+
+# for time in range(time_size):
+#     for i, offset in enumerate(offsets):
+#         batch_x[i, time] = x[(offset + time_idx) % data_size]
+#         batch_t[i, time] = t[(offset + time_idx) % data_size]
+#     time_idx += 1
+
+# print(x)
+# print(offsets)
+# print(batch_x)
+
+# def seki(grads):
+#     for grad in grads:
+#         grad *= 0.1
+
+# a = [np.arange(10, dtype="f"), np.arange(10, 20, dtype="f")]
+# print(a)
+# seki(a)
+# print(a)
+
+a, b = [1, 2]
+print(a, b)
