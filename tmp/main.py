@@ -174,5 +174,15 @@ import sys
 # seki(a)
 # print(a)
 
-a, b = [1, 2]
-print(a, b)
+# a, b = [1, 2]
+# print(a, b)
+
+# a = np.arange(12).reshape(3, -1)
+# dropout_ratio = 0.5
+
+# mask = np.random.rand(*a.shape) > dropout_ratio
+# print(mask)
+
+p = np.array([0.3, 0.5, 0.2])
+for i in range(30):
+    print(np.random.choice(len(p), size=1, p=p))

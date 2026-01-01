@@ -1,6 +1,6 @@
 import sys
 sys.path.append("..")
-from time_layers import *
+from ch06_re.time_layers import *
 import pickle
 
 class Rnnlm:

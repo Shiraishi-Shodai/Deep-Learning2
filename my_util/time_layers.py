@@ -349,6 +349,7 @@ class TimeSoftmaxWithLoss:
 
         return dx
 
+    
 class TimeDropout:
     def __init__(self, dropout_ratio=0.5):
         self.params, self.grads = [], []
@@ -368,3 +369,45 @@ class TimeDropout:
 
     def backward(self, dout):
         return dout * self.mask
+
+
+class TimeReLUWithLoss:
+    def __init__(self):
+        self.params, self.grads = [], []
+        self.cache = None
+        self.ignore_label = -1
+    
+    def forward(self, xs, ts):
+        N, T, D = xs.shape
+
+        # 時系列をまとめる
+        xs = xs.reshape(N * T, D)
+        ts = ts.reshape(N * T, D)
+
+        # ReLU(0以下の値を0に変更)
+        ys = np.maximum(0, xs)
+
+        # MSE
+        diff = ys - ts
+        loss = 0.5 * np.sum(diff ** 2)
+        loss /= (N * T)
+
+        self.cache = (xs, ys, ts, diff, (N, T, D))
+
+        return loss
+    
+    def backward(self, dout=1):
+        xs, ys, ts, diff, (N, T, D) = self.cache
+
+        # MSEの微分
+        dy = diff / (N * T)
+        dy *= dout
+
+        # ReLUの微分
+        dx = dy.copy() # 値渡し
+        dx[xs <= 0] = 0
+
+        # 元の形に戻す
+        dx = dx.reshape(N, T, D)
+
+        return dx

@@ -4,12 +4,6 @@ from common.layers import *
 from common.functions import softmax, sigmoid
 import numpy as np
 
-
-
-
-
-
-
 class RNN:
     def __init__(self, Wx, Wh, b):
         self.params = [Wx, Wh, b]
