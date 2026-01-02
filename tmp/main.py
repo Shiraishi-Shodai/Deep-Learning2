@@ -183,6 +183,41 @@ import sys
 # mask = np.random.rand(*a.shape) > dropout_ratio
 # print(mask)
 
-p = np.array([0.3, 0.5, 0.2])
-for i in range(30):
-    print(np.random.choice(len(p), size=1, p=p))
+# p = np.array([0.3, 0.5, 0.2])
+# for i in range(30):
+#     print(np.random.choice(len(p), size=1, p=p))
+
+# a = np.arange(12).reshape(2, 2, 3)
+# print(a)
+
+# b = a.reshape(2 * 2, -1)
+# print(b)
+
+# c = b.reshape(2, 2, -1)
+# print(c)
+
+# text_np = np.array(["Hello", "Yes", "No", "Wow", "Hello"])
+# corpus = []
+# word_to_id = {}
+# id_to_word = {}
+
+# for text in text_np:
+#     if text not in word_to_id:
+#         new_id = len(id_to_word)
+#         word_to_id[text] = new_id
+#         id_to_word[new_id] = text
+#     corpus.append(word_to_id[text])
+
+# print(corpus)
+# print(word_to_id)
+# print(id_to_word)
+
+# a = np.arange(1, 5).reshape(2, 2)
+# b = a.reshape(2 * 2, -1)
+
+# w = np.arange(10, 50, 10).reshape(1, -1)
+# u = np.dot(b, w)
+# print(u)
+# print()
+# print(u.reshape(2, 2, 4))
+

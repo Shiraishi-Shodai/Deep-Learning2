@@ -281,6 +281,8 @@ class TimeAffine:
         self.x = None
 
     def forward(self, x):
+
+        """元の計算方法
         N, T, D = x.shape
         W, b = self.params
 
@@ -288,25 +290,81 @@ class TimeAffine:
         out = np.dot(rx, W) + b
         self.x = x
         return out.reshape(N, T, -1)
+        """
+
+        # 形状の取得方法を入力値の次元によって変更(TimeAffineをレイヤーの最初にする場合とそれ以外の場合で入力値の次元はことなるから)
+        if x.ndim == 3:
+            N, T, D = x.shape
+            W, b = self.params
+        
+        elif x.ndim == 2:
+            N, T = x.shape
+            W, b = self.params
+            _, D = W.shape
+
+        # 行方向に行列を伸ばす
+        rx = x.reshape(N * T, -1)
+        # rx(N * T, -1) ⦿ (1, D) + (D)
+        out = np.dot(rx, W) + b
+
+        self.x = x
+
+        # rx(N, T, D)
+        return out.reshape(N, T, D)
 
     def backward(self, dout):
         x = self.x
-        N, T, D = x.shape
-        W, b = self.params
 
-        dout = dout.reshape(N*T, -1)
-        rx = x.reshape(N*T, -1)
+        # ☓forward時に(N, T, D)の形状を出力しているからbackwardでもdoutは(N, T, D)で逆伝搬する
+        # ☓したがって、backward時は入力値のdoutの次元をif文で調べなくて良い
+        # 上記説明が間違っている理由、TimeAffineの次にPoolingのようなレイヤーがあるとdoutはforward時の出力形状とは限らないから
+        # N, T, D = dout.shape
+        # 形状を取得するときは、次の層から逆伝搬した値ではなく、絶対的に変化しないforwardの入力値xを使用する
 
-        db = np.sum(dout, axis=0)
+        # 形状の取得方法を入力値の次元によって変更(TimeAffineをレイヤーの最初にする場合とそれ以外の場合で入力値の次元はことなるから)
+        if x.ndim == 3:
+            N, T, D = x.shape
+            W, b = self.params
+        
+        elif x.ndim == 2:
+            N, T = x.shape
+            W, b = self.params
+            _, D = W.shape
+
+        """元の計算方法
+
+        # dout = dout.reshape(N*T, -1)
+        # rx = x.reshape(N*T, -1)
+
+        # db = np.sum(dout, axis=0)
+        # dW = np.dot(rx.T, dout)
+        # dx = np.dot(dout, W.T)
+        # dx = dx.reshape(*x.shape)
+
+        # self.grads[0][...] = dW
+        # self.grads[1][...] = db
+
+        # return dx
+        """
+
+        # 形状をreshape前のoutの形に戻す(N * T, 1)
+        dout = dout.reshape(N * T, -1)
+        # dWを計算するためにxの形状を変更(N * T, -1)
+        rx = x.reshape(N * T, -1)
+
+        # dWの計算
         dW = np.dot(rx.T, dout)
+        # dbの計算
+        db = np.sum(dout, axis=0)
+        # dxの計算
         dx = np.dot(dout, W.T)
+        # 形状をxと同じ状態に戻す(xの次元が変化しても柔軟に対応できるようにするため*x.shapeとする)
         dx = dx.reshape(*x.shape)
 
         self.grads[0][...] = dW
         self.grads[1][...] = db
 
         return dx
-
 
 class TimeSoftmaxWithLoss:
     def __init__(self):

@@ -6,51 +6,40 @@ from common.np import *
 import numpy as np
 
 
-# def preprocess(text):
-#     text = text.lower()
-#     text = text.replace('.', ' .')
-#     words = text.split(' ')
-
-#     word_to_id = {}
-#     id_to_word = {}
-#     for word in words:
-#         if word not in word_to_id:
-#             new_id = len(word_to_id)
-#             word_to_id[word] = new_id
-#             id_to_word[new_id] = word
-
-#     corpus = np.array([word_to_id[w] for w in words])
-
-#     return corpus, word_to_id, id_to_word
-
-
 def preprocess(text):
-    """
-    単語に分割
-    """
     text = text.lower()
-    text = text.replace(".", " .") # 単語を分割するために、ピリオドの前にスペースを追加
-    words = text.split(" ") # 各単語を分割
+    text = text.replace('.', ' .')
+    words = text.split(' ')
 
-    """
-    単語にIDを振る
-    """
     word_to_id = {}
     id_to_word = {}
-
     for word in words:
-        if word not in word_to_id.keys():
-            new_id = len(word_to_id.keys())
+        if word not in word_to_id:
+            new_id = len(word_to_id)
             word_to_id[word] = new_id
             id_to_word[new_id] = word
 
-    """
-    単語のidリストを取得
-    """
-    # a = np.array([x for x in id_to_word.keys()]) # [0 1 2 3 4 5 6]
-    # b = np.array([word_to_id[w] for w in words]) # [0 1 2 3 4 1 5 6]
-    # print(a, b)
     corpus = np.array([word_to_id[w] for w in words])
+
+    return corpus, word_to_id, id_to_word
+
+
+def custom_preprocess(text_np):
+    """各要素にテキストが入ったnumpy配列を受け取り、以下の値を返す
+    return1: corpus 各要素の単語ID
+    return2: word_to_id その単語のid
+    return3: id_to_word その単語
+    """
+    corpus = []
+    word_to_id = {}
+    id_to_word = {}
+
+    for text in text_np:
+        if text not in word_to_id:
+            new_id = len(id_to_word)
+            word_to_id[text] = new_id
+            id_to_word[new_id] = text
+        corpus.append(word_to_id[text])
     
     return corpus, word_to_id, id_to_word
 
