@@ -68,6 +68,7 @@ class RnnlmTrainer:
                 total_loss += loss
                 loss_count += 1
 
+                # FIXME: モデルを評価する指標を柔軟に変更できるように修正
                 # パープレキシティの評価
                 if (eval_interval is not None) and (iters % eval_interval == 0):
                     ppl = np.exp(total_loss / loss_count)

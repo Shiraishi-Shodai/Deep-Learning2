@@ -5,20 +5,27 @@ from ch05_re.time_layers import *
 import pickle
 
 class RNNRegressor:
-    def __init__(self, vocab_size, wordvec_size=100, hidden1_size=100, hidden2_size=1):
-        V, D, H1, H2 = all_data_size, vec_size, hidden1_size, hidden2_size
+    def __init__(self, input_size=1, vec_size=100, hidden_size=50, lam=1):
+        I, D, H = input_size, vec_size, hidden_size
         rn = np.random.randn
 
-        affine1_W = (rn(1, D) / 100).astype("f")
+        # TODO: マジックナンバー1の変更
+        scaleAffin1_W = np.sqrt(2 / I)
+        affine1_W = scaleAffin1_W * (rn(I, D) / 100).astype("f")
         affine1_b = np.zeros(D).astype("f")
-        rnn_Wx = (rn(D, H1) / np.sqrt(D)).astype("f")
-        rnn_Wh = (rn(H1, H1) / np.sqrt(H)).astype("f")
+
+        scaleWx = np.sqrt(1 / D).astype("f")
+        scaleWh = np.sqrt(1 / H).astype("f")
+        rnn_Wx = scaleWx * (rn(D, H)).astype("f")
+        rnn_Wh = scaleWh * (rn(H, H) / np.sqrt(H)).astype("f")
         rnn_b = np.zeros(H).astype("f")
-        affine2_W = (rn(H1, H2) / np.sqrt(H1)).astype("f")
-        affine2_b = np.zeros(H2).astype("f")
+
+        scaleAffin2_W = np.sqrt(2 / H)
+        affine2_W = scaleAffin2_W * (rn(H, I) / np.sqrt(H)).astype("f")
+        affine2_b = np.zeros(I).astype("f")
 
         self.layers = [
-            TimeAffine(embed_W),
+            TimeAffine(affine1_W, affine1_b),
             TimeRNN(rnn_Wx, rnn_Wh, rnn_b),
             TimeAffine(affine2_W, affine2_b)
         ]
@@ -43,7 +50,8 @@ class RNNRegressor:
         
     def forward(self, xs, ts):
         out = self.predict(xs)
-        loss = self.loss_layer.forward(out, ts)
+        Wx = self.rnn_layer[0].params[0]
+        loss = self.loss_layer.forward(out, ts, Wx)
         return loss
     
     def backward(self, dout=1):
@@ -54,8 +62,8 @@ class RNNRegressor:
         return dout
     
     def reset_state(self):
-    """隠れ状態hをNoneにする
-    """
+        """隠れ状態hをNoneにする
+        """
         for rnn_layer in self.lstm_layers:
             rnn_layer.reset_state()
     

@@ -2,6 +2,9 @@ import numpy as np
 import copy
 import collections
 import sys
+import itertools
+import sys
+sys.path.append("..")
 
 # h = np.array([[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]]) # (2, 3)
 # w = np.arange(12).reshape(3, -1) # (3, 4)
@@ -221,3 +224,66 @@ import sys
 # print()
 # print(u.reshape(2, 2, 4))
 
+# def get_test_batch(x, t, batch_size, time_size, current_idx):
+#     """
+#     わりきれなかったデータは捨てる。
+#     """
+#     data_size = x.shape[0]
+#     batch_x = np.zeros((batch_size, time_size))
+#     batch_t = np.zeros((batch_size, time_size))
+
+#     for b in range(batch_size):
+#         for i in range(time_size):
+#             batch_x[b, i] = x[current_idx + i]
+#             batch_t[b, i] = t[current_idx + i]
+#         current_idx += time_size
+
+#     return batch_x, batch_t, current_idx
+
+# # データの用意 (100)
+# train_X = np.arange(1, 101).reshape(-1, 1)
+# train_T = np.arange(200, 301)
+# data_size = train_X.shape[0]
+# batch_size = 5
+# time_size = 3
+# current_idx = 0
+
+# max_iters = data_size // (batch_size * time_size)
+
+# for iters in range(max_iters):
+#     batch_x, batch_t, current_idx = get_test_batch(train_X, train_T, batch_size, time_size, current_idx)
+
+# print(batch_x)
+# print(batch_t)
+
+# a = np.zeros((4, 5))
+# b = np.arange(10).reshape(2, -1)
+
+# c = np.arange(5).reshape(-1, 1)
+# d = c[3, 0]
+# print(d)
+
+# print((np.random.randn(10000).flatten().sum()) / 10000)
+# print((np.random.rand(10000).flatten().sum()) / 10000)
+
+# print(np.array("x").reshape(1, 1).shape)
+# a = np.arange(12).reshape(2, 2, 3)
+# print(a)
+
+# print()
+# print(a.flatten())
+
+# flg = np.array([True, True, False])
+# print(flg)
+# print(flg.astype(np.float32))
+
+# a = np.array([10, 20, 30])
+# print(np.argmax(a))
+
+# a = np.arange(12).reshape(3, -1)
+# print(a)
+
+
+# print(a[:, :-1])
+
+# print(a[:, 1:])

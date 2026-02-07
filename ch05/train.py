@@ -4,8 +4,7 @@ sys.path.append("..")
 from common.optimizer import SGD
 from dataset import ptb
 from ch05.simple_rnnlm import SimpleRnnlm
-from myoutput.time_layers import TimeRNN
-from myoutput.trainer import RNNTrainer
+from common.trainer import RnnlmTrainer
 
 # ハイパーパラメータ
 batch_size = 10
@@ -32,7 +31,7 @@ print(f"corpus size: {corpus_size}, vocabulary size: {vocab_size}")
 model = SimpleRnnlm(vocab_size, wordvec_size, hidden_size)
 optimizer = SGD()
 
-trainer = RNNTrainer(model, optimizer)
+trainer = RnnlmTrainer(model, optimizer)
 
 trainer.fit(xs, ts, max_epoch=max_epoch, batch_size=batch_size, time_size=time_size)
 

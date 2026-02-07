@@ -9,10 +9,10 @@ import pandas as pd
 # np.savetxt("../data/sin_data.csv", data, delimiter=",", fmt="%.2f", header="X,y", comments="")
 
 df = pd.read_csv("../data/sin_data.csv")
-# print(df.head())
-# print(df.index)
-# print(df.loc[:, "y"])
+X = df["X"].to_numpy()
+y = df["y"].to_numpy()
 
-# plt.plot(X, y)
-# plt.grid()
-# plt.show()
+plt.plot(X, y)
+plt.xlabel("x")
+plt.ylabel("y")
+plt.savefig("original.png")

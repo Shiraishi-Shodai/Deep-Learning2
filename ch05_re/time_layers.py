@@ -4,10 +4,10 @@ from common.layers import Embedding
 from common.functions import softmax
 
 class RNN:
-    def __init__(self, Wx, Wh, b):
+    def __init__(self, Wx, Wh, b, lam=1):
         self.params = [Wx, Wh, b]
         self.grads = [np.zeros_like(Wx), np.zeros_like(Wh), np.zeros_like(b)]
-        
+        self.lam = lam
         self.cache = None
 
     def forward(self, x, h_prev):
@@ -26,7 +26,8 @@ class RNN:
         db = np.sum(dt, axis=0)
         dWh = np.dot(h_prev.T, dt)
         dh_prev = np.dot(dt, Wh.T)
-        dWx = np.dot(x.T, dt)
+        # dWx = np.dot(x.T, dt)
+        dWx = np.dot(x.T, dt) + self.lam * Wx
         dx = np.dot(dt, Wx.T)
 
         self.grads[0][...] = dWx
@@ -169,7 +170,7 @@ class TimeAffine:
         self.x = x
 
         # rx(N, T, D)
-        return out.reshape(N, T, D)
+        return out.reshape(N, T, -1)
 
     def backward(self, dout):
         x = self.x
@@ -206,7 +207,7 @@ class TimeAffine:
         # return dx
         """
 
-        # 形状をreshape前のoutの形に戻す(N * T, 1)
+        # 形状をreshape前のoutの形に戻す(N * T, -1)
         dout = dout.reshape(N * T, -1)
         # dWを計算するためにxの形状を変更(N * T, -1)
         rx = x.reshape(N * T, -1)
@@ -268,12 +269,13 @@ class TimeSoftmaxWithLoss:
         return dx
 
 class TimeReLUWithLoss:
-    def __init__(self):
+    def __init__(self, lam=1):
         self.params, self.grads = [], []
         self.cache = None
         self.ignore_label = -1
+        self.lam = lam
     
-    def forward(self, xs, ts):
+    def forward(self, xs, ts, Wx):
         N, T, D = xs.shape
 
         # 時系列をまとめる
@@ -287,6 +289,9 @@ class TimeReLUWithLoss:
         diff = ys - ts
         loss = 0.5 * np.sum(diff ** 2)
         loss /= (N * T)
+
+        # WxでL2正則化
+        loss += 0.5 * self.lam * np.sum(Wx ** 2)
 
         self.cache = (xs, ys, ts, diff, (N, T, D))
 
