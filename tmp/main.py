@@ -5,6 +5,7 @@ import sys
 import itertools
 import sys
 sys.path.append("..")
+from matplotlib import pyplot as plt
 
 # h = np.array([[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]]) # (2, 3)
 # w = np.arange(12).reshape(3, -1) # (3, 4)
@@ -287,3 +288,17 @@ sys.path.append("..")
 # print(a[:, :-1])
 
 # print(a[:, 1:])
+
+# print("Hello Zellij")
+
+# a = np.arange(12).reshape(4, -1)
+# print(a)
+# print(a[[1]])
+# print(a[1])
+
+# b = 0.285
+# print(f"{b*100:.3f}")
+
+a = [10, 5, 12]
+plt.plot(np.arange(len(a)), a, marker='o')
+plt.show()

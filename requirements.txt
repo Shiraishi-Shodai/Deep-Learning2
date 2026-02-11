@@ -24,7 +24,7 @@ mdurl==0.1.2
 ml-dtypes==0.4.1
 mpmath==1.3.0
 namex==0.0.8
-numpy==2.0.2
+numpy
 opt_einsum==3.4.0
 optree==0.14.0
 packaging==24.2
@@ -42,10 +42,6 @@ scipy==1.15.1
 seaborn==0.13.2
 six==1.17.0
 sympy==1.13.3
-tensorboard==2.18.0
-tensorboard-data-server==0.7.2
-tensorflow==2.18.0
-tensorflow-io-gcs-filesystem==0.37.1
 termcolor==2.5.0
 threadpoolctl==3.5.0
 typing_extensions==4.12.2

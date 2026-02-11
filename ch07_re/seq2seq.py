@@ -14,7 +14,7 @@ class Encoder:
         lstm_Wh = (rn(H, 4*H) / np.sqrt(H)).astype("f")
         lstm_b = np.zeros(4*H).astype("f")
     
-        self.embed = TimeEmbedding(embed_W),
+        self.embed = TimeEmbedding(embed_W)
         self.lstm = TimeLSTM(lstm_Wx, lstm_Wh, lstm_b, stateful=False)
 
         self.params = self.embed.params + self.lstm.params
@@ -34,6 +34,7 @@ class Encoder:
 
         dout = self.lstm.backward(dhs)
         dout = self.embed.backward(dout)
+        return dout
 
 
 class Decoder:
@@ -55,8 +56,8 @@ class Decoder:
         self.params, self.grads = [], []
 
         for layer in (self.embed, self.lstm, self.affine):
-            self.params = layer.prams
-            self.grads = layer.grads
+            self.params += layer.params
+            self.grads += layer.grads
     
     def forward(self, xs, h):
         self.lstm.set_state(h)
@@ -100,14 +101,14 @@ class Seq2seq(BaseModel):
         self.softmax = TimeSoftmaxWithLoss()
 
         self.params = self.encoder.params + self.decoder.params
-        self.grads = self.grads  + self.grads
+        self.grads = self.encoder.grads  + self.decoder.grads
     
     def forward(self, xs, ts):
-        decoder_xs, decoder_ts = ts[:, :-1], ts[:, :-1]
+        decoder_xs, decoder_ts = ts[:, :-1], ts[:, 1:]
 
         h = self.encoder.forward(xs)
-        score = self.docoder.forward(decoder_xs, h)
-        loss = self.loss(score, decoder_ts)
+        score = self.decoder.forward(decoder_xs, h)
+        loss = self.softmax.forward(score, decoder_ts)
 
         return loss
 
@@ -120,6 +121,6 @@ class Seq2seq(BaseModel):
     
     def generate(self, xs, start_id, sample_size):
         h = self.encoder.forward(xs)
-        sampled = self.decoer.generate(h, start_id, sample_size)
+        sampled = self.decoder.generate(h, start_id, sample_size)
 
         return sampled
