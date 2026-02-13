@@ -7,13 +7,20 @@ from common.optimizer import Adam
 from common.trainer import Trainer
 from common.util import eval_seq2seq
 from seq2seq import Seq2seq
-# from peeky_seq2seq import PeekySeq2seq
+from peeky_seq2seq import PeekySeq2seq
 
 # データセット読み込み
 (x_train, t_train), (x_test, t_test) = sequence.load_data("addition.txt")
 char_to_id, id_to_char = sequence.get_vocab()
 
-# x_train, x_test = x_train[:, ::-1], x_test[:, ::-1]
+file_name = "first-test.png"
+
+is_reverse = False
+
+if is_reverse:
+    x_train, x_test = x_train[:, ::-1], x_test[:, ::-1]
+
+    file_name = "second-test.png"
 # print(x_train.shape)
 # train_data_size = int(len(x_train) * 0.01)
 # test_data_size = int(len(x_test) * 0.01)
@@ -36,7 +43,10 @@ max_epoch = 25
 max_grad = 5.0
 
 # モデル/オプティマイザ/トレーナーの生成
+# model = Seq2seq(vocab_size, wordvec_size, hidden_size)
 model = Seq2seq(vocab_size, wordvec_size, hidden_size)
+file_name = "peeky-test.png"
+
 optimizer = Adam()
 trainer = Trainer(model, optimizer)
 
@@ -55,5 +65,5 @@ for epoch in range(max_epoch):
     print(f"val acc {acc*100:.3f}")
 
 
-plt.plot(np.arange(len(acc_list)), acc_list)
-plt.savefig("first-test.png")
+plt.plot(np.arange(len(acc_list)), acc_list, marker="o", color="orange")
+plt.savefig(file_name)
