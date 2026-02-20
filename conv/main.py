@@ -162,7 +162,7 @@ with torch.no_grad():
         show_result(axes_size, show_images, show_predicted_labels)
 
 print(f"Test Accuracy: {100 * correct / total}%")
+plt.tight_layout()
 # plt.style.use("ggplot")
 # plt.style.use("seaborn-v0_8")
-plt.tight_layout()
 plt.show()
