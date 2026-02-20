@@ -6,6 +6,8 @@ import itertools
 import sys
 sys.path.append("..")
 from matplotlib import pyplot as plt
+from matplotlib import image as mping
+import japanize_matplotlib
 
 # h = np.array([[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]]) # (2, 3)
 # w = np.arange(12).reshape(3, -1) # (3, 4)
@@ -299,6 +301,46 @@ from matplotlib import pyplot as plt
 # b = 0.285
 # print(f"{b*100:.3f}")
 
-a = [10, 5, 12]
-plt.plot(np.arange(len(a)), a, marker='o')
+# a = [10, 5, 12]
+# plt.plot(np.arange(len(a)), a, marker='o')
+# plt.show()
+
+# def show_result(axes_size, labels):
+
+#     for row in range(axes_size):
+#         for col in range(axes_size):
+#             print(labels[row*axes_size + col])
+
+# a = np.arange(16)
+# show_result(4, a)
+
+image = mping.imread("first-test.png")
+
+# plt.style.use("ggplot")
+# plt.style.use("seaborn-v0_8")
+# plt.style.use("dark_background")
+
+fig, ax = plt.subplots(2, 2)
+fig.set_facecolor("#f0f0f0")
+ax[0, 0].set_facecolor("#2d2d2d")    # グラフ部分
+ax[1, 0].set_facecolor("#2d2d2d")    # グラフ部分
+ax[0, 0].imshow(image)
+ax[0, 0].text(
+    0.5,
+    -0.15,
+    "これは1枚目",
+    transform=ax[0, 0].transAxes,
+    ha="center"
+)
+ax[0, 1].imshow(image)
+ax[0, 1].text(
+    0.5,
+    -0.15,
+    "これは1枚目",
+    transform=ax[0, 1].transAxes,
+    ha="center"
+)
+
+plt.tight_layout()
+
 plt.show()

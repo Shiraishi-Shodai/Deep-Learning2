@@ -1,5 +1,5 @@
 from seq2seq import Seq2seq, Encoder
-import numpy as np
+from common.np import *
 from common.time_layers import *
 
 class PeekyDecoder:
@@ -73,7 +73,7 @@ class PeekyDecoder:
             out = np.concatenate((peeky_h, out), axis=2)
             score = self.affine.forward(out)
 
-            char_id = np.argmax(score.flatten())
+            char_id = int(np.argmax(score.flatten()))
             sampled.append(char_id)
         
         return sampled

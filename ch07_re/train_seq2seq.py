@@ -1,17 +1,34 @@
 import sys
 sys.path.append("..")
+import common.config
 import numpy as np
 import matplotlib.pyplot as plt
 from dataset import sequence
 from common.optimizer import Adam
 from common.trainer import Trainer
-from common.util import eval_seq2seq
+from common.util import eval_seq2seq, to_gpu
 from seq2seq import Seq2seq
 from peeky_seq2seq import PeekySeq2seq
+
+GPU = common.config.GPU
 
 # データセット読み込み
 (x_train, t_train), (x_test, t_test) = sequence.load_data("addition.txt")
 char_to_id, id_to_char = sequence.get_vocab()
+
+train_data_size = int(len(x_train) * 0.3)
+test_data_size = int(len(x_test) * 0.3)
+
+print(train_data_size, test_data_size)
+
+x_train, t_train = x_train[:train_data_size], t_train[:train_data_size]
+x_test, t_test = x_test[:test_data_size], t_test[:test_data_size]
+
+# --- 追加すべき処理 ---
+if GPU:
+    x_train, t_train = to_gpu(x_train), to_gpu(t_train)
+    x_test, t_test = to_gpu(x_test), to_gpu(t_test)
+# --------------------
 
 file_name = "first-test.png"
 
@@ -22,11 +39,6 @@ if is_reverse:
 
     file_name = "second-test.png"
 # print(x_train.shape)
-# train_data_size = int(len(x_train) * 0.01)
-# test_data_size = int(len(x_test) * 0.01)
-
-# x_train, t_train = x_train[:train_data_size], t_train[:train_data_size]
-# x_test, t_test = x_test[:test_data_size], t_test[:test_data_size]
 
 # print(train_data_size)
 # print(test_data_size)
@@ -57,9 +69,10 @@ for epoch in range(max_epoch):
     correct_num = 0
     for i in range(len(x_test)):
         question, correct = x_test[[i]], t_test[[i]]
-        verbose = i < 10
+        # verbose = i < 10
+        verbose = i >= 0
         correct_num += eval_seq2seq(model, question, correct, id_to_char, verbose)
-    
+
     acc = float(correct_num) / len(x_test)
     acc_list.append(acc)
     print(f"val acc {acc*100:.3f}")

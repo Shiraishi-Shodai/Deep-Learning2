@@ -1,6 +1,6 @@
 import sys
 sys.path.append("..")
-import numpy as np
+from common.np import *
 from common.time_layers import TimeEmbedding, TimeLSTM, TimeAffine, TimeSoftmaxWithLoss
 from common.base_model import BaseModel
 
@@ -78,17 +78,17 @@ class Decoder:
     
     def generate(self, h, start_id, sample_size):
         sampled = []
-        sample_id = start_id
+        sample_id = int(start_id)
         self.lstm.set_state(h)
 
         for _ in range(sample_size):
-            x = np.array(sample_id).reshape(1, 1)
+            x = np.array([sample_id]).reshape(1, 1)
             out = self.embed.forward(x)
             out = self.lstm.forward(out)
             score = self.affine.forward(out)
 
-            sample_id = np.argmax(score.flatten())
-            sampled.append(int(sample_id))
+            sample_id = int(np.argmax(score.flatten()))
+            sampled.append(sample_id)
         
         return sampled
 

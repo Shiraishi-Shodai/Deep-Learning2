@@ -2,7 +2,7 @@
 from common.np import *  # import numpy as np
 from common.config import GPU
 from common.functions import softmax, cross_entropy_error
-import numpy as np
+# import numpy as np
 
 
 class MatMul:

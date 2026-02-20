@@ -2,7 +2,7 @@
 from common.np import *  # import numpy as np (or import cupy as np)
 from common.layers import *
 from common.functions import softmax, sigmoid
-import numpy as np
+# import numpy as np
 
 class RNN:
     def __init__(self, Wx, Wh, b):
