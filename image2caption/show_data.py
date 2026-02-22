@@ -33,8 +33,8 @@ csv_file_path = Path(rf'{path}\captions.csv')
 # =================================
 # read csv data
 # =================================
-data = pl.read_csv(str(csv_file_path))
-print(data.describe())
+# data = pl.read_csv(str(csv_file_path))
+# print(data.describe())
 
 # =================================
 # 画像を一枚表示
@@ -86,7 +86,7 @@ print(data.describe())
 # 単語IDを辞書化
 # =================================
 dict_path = rf'{path}\word_dict.csv'
-word_series = data["caption"]
+# word_series = data["caption"]
 
 def make_dict(word_series, dict_path):
     """単語の辞書を作成する
@@ -97,13 +97,20 @@ def make_dict(word_series, dict_path):
         words = caption.split()
         for word in words:
             if word not in word_dict["word"]:
-                new_id = next(reversed(word_dict["id"])) if len(word_dict["id"]) > 0 else 0
+                new_id = next(reversed(word_dict["id"])) + 1 if len(word_dict["id"]) > 0 else 0
                 word_dict["id"].append(new_id)
                 word_dict["word"].append(word)
     
     word_dataframe = pl.DataFrame(word_dict)
     word_dataframe.write_csv(dict_path)
 
-make_dict(word_series, dict_path)
+# make_dict(word_series, dict_path)
 
-
+# =================================
+# one-hotベクトル化
+# =================================
+word_dataframe = pl.read_csv(dict_path)
+print(word_dataframe)
+last_id = next(reversed(word_dataframe["id"]))
+print(F.one_hot(torch.arange(0, last_id + 1)))
+print(F.one_hot(torch.arange(0, last_id + 1)).shape)
