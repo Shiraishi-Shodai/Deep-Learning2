@@ -163,6 +163,6 @@ with torch.no_grad():
 
 print(f"Test Accuracy: {100 * correct / total}%")
 plt.tight_layout()
-# plt.style.use("ggplot")
+# plt.style.use("ggplot") 
 # plt.style.use("seaborn-v0_8")
 plt.show()
