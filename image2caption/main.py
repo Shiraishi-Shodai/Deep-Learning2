@@ -25,8 +25,6 @@ print(data.describe())
 # =================================
 word_dataframe = pl.read_csv(str(dict_path))
 print(word_dataframe)
-last_id = next(reversed(word_dataframe["id"]))
-onehot_vec = F.one_hot(torch.arange(0, last_id + 1))
 # print(onehot_vec)
 # print(onehot_vec.shape)
 

@@ -20,15 +20,68 @@ print("Path to dataset files:", path)
 text_file_path = Path(rf'{path}\captions.txt')
 csv_file_path = Path(rf'{path}\captions.csv')
 
-# with open(text_file_path, 'r', encoding='utf-8') as f:
-#     lines = f.readlines()
+with open(text_file_path, 'r', encoding='utf-8') as f:
+    lines = f.readlines()
 
-# with open(csv_file_path, 'w', newline="", encoding='utf-8') as f:
-#     writer = csv.writer(f)
+with open(csv_file_path, 'w', newline="", encoding='utf-8') as f:
+    writer = csv.writer(f)
 
-#     for line in lines:
-#         row = line.strip().split(',', 1)
-#         writer.writerow(row)
+    for line in lines:
+        row = line.strip().split(',', 1)
+        writer.writerow(row)
+
+# =================================
+# csvファイルのキャプションに<start> <end>を追加
+# =================================
+csv_dataframe = pl.read_csv(csv_file_path)
+START_TOKEN = '<start>'
+LAST_TOKEN = '<end>'
+PAD_TOKEN = '<pad>'
+
+def start_last_token_check(df, START_TOKEN, LAST_TOKEN, PAD_TOKEN):
+
+    df = df.with_columns(
+        pl.when(~pl.col("caption").str.starts_with(START_TOKEN))
+        .then(pl.lit(START_TOKEN) + " " + pl.col("caption"))
+        .otherwise(pl.col("caption"))
+        .alias("caption")
+    )
+
+    df = df.with_columns(
+        pl.when(~pl.col("caption").str.ends_with(LAST_TOKEN))
+        .then(pl.col("caption") + " " + pl.lit(LAST_TOKEN))
+        .otherwise(pl.col("caption"))
+        .alias("caption")
+    )
+
+    df = df.with_columns(
+        pl.col("caption").str.split(" ").alias("tokens")
+    )
+
+    max_len = df.select(pl.col("tokens").list.len().max()).item()
+
+    df = df.with_columns(
+        pl.when(pl.col("tokens").list.len() < max_len)
+        .then(
+            pl.col("tokens").list.concat(
+                pl.lit(PAD_TOKEN).repeat_by(
+                    max_len - pl.col("tokens").list.len()
+                )
+            )
+        )
+        .otherwise(pl.col("tokens"))
+        .alias("tokens")
+    )
+
+    # ← CSV保存用に文字列へ戻す
+    df = df.with_columns(
+        pl.col("tokens").list.join(" ").alias("caption")
+    ).drop("tokens")
+
+    return df
+
+csv_dataframe = start_last_token_check(csv_dataframe, START_TOKEN, LAST_TOKEN, PAD_TOKEN)
+csv_dataframe.write_csv(csv_file_path)
 
 # =================================
 # read csv data
@@ -109,8 +162,8 @@ def make_dict(word_series, dict_path):
 # =================================
 # one-hotベクトル化
 # =================================
-word_dataframe = pl.read_csv(dict_path)
-print(word_dataframe)
-last_id = next(reversed(word_dataframe["id"]))
-print(F.one_hot(torch.arange(0, last_id + 1)))
-print(F.one_hot(torch.arange(0, last_id + 1)).shape)
+# word_dataframe = pl.read_csv(dict_path)
+# print(word_dataframe)
+# last_id = next(reversed(word_dataframe["id"]))
+# print(F.one_hot(torch.arange(0, last_id + 1)))
+# print(F.one_hot(torch.arange(0, last_id + 1)).shape)
